@@ -1,0 +1,112 @@
+
+string scape_char(string input)
+    if input == '"' || input == "\"
+        return "\" + input
+    end
+    return input
+end
+
+string scape_string(string input)
+    var str = ""
+    loop input
+        str = str + scape_char(@)
+    end
+    return str
+end
+
+# Returns the json representation of the SPRAK input
+# All arrays are considered objects
+# All numeric keys in arrays will be serialized as strings
+string to_json(input)
+    if Type(input) == "bool"
+        if input
+            return "true"
+        else
+            return "false"
+        end
+    else if Type(input)  == "number"
+        return input + ""
+    else if Type(input) == "string"
+        return '"' + scape_string(input) + '"'
+    else if Type(input) == "array"
+        var json  = "{"
+        var i = 0
+        var indexes = GetIndexes(input)
+        loop
+            if i == Count(input)
+                break
+            else if i > 0
+                json = json + ",";
+            end
+            var index = indexes[i]
+            # Keys are always json strings
+            var key = to_json(index+"")
+            var value = to_json(input[index])
+            json = json + key + ":" + value
+            i = i + 1
+        end
+        return json + "}"
+    end
+end
+
+# Returns the SPRAK representation of the json
+array from_json_inner(string json, pos)
+    var first_c = json[pos]
+    if first_c == "{"
+        pos = pos + 1
+        var arr = []
+        loop
+            if json[pos] == "}"
+                return [pos, arr]
+            else if json[pos] == ","
+                pos = pos + 1
+            end
+            var key_res = from_json_inner(json, pos)
+            pos = key_res[0]
+            var key = key_res[1]
+            var value_res = from_json_inner(json, pos + 1)
+            pos = value_res[0]
+            var value = value_res[1]
+            arr[key] = value
+        end
+    else if first_c == '"'
+        pos = pos + 1
+        var str = ""
+        loop
+            if json[pos] == '"'
+                return [pos + 1, str]
+            end
+            if json[pos] == "\"
+                pos = pos + 1
+            end
+            str = str + json[pos]
+            pos = pos + 1
+        end
+    else
+        var acc = ""
+        loop
+            if pos >= Count(json)
+                pos = pos + 1
+                break;
+            else if json[pos] == "," || json[pos] == "}" || json[pos] == ":"
+                break; 
+            end
+            acc = acc + json[pos]
+            pos = pos + 1
+        end
+        if acc == "true"
+            return [pos, true]
+        else if acc == "false"
+            return [pos, false]
+        else
+            var int = parse_int(acc)
+            ## TODO: Validate if the number is valid
+            return [pos, int[1]]
+        end
+    end
+end
+
+array from_json(string json)
+    var res = from_json_inner(json, 0)
+    return [res[1]]
+end

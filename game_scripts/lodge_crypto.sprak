@@ -1,0 +1,27 @@
+
+ClearText()
+
+string s = Input("Enter key: ")
+number k = CharToInt(s[0])
+
+Print("Enter message:")
+string message = Input("")
+
+string encrypted = ""
+
+loop c in message
+    if c == " "
+        encrypted += " "
+    else
+        var sum = Mod(k + CharToInt(c), 26)
+        #Print("sum for " + c + " = " + sum)
+
+        var c2 = IntToChar(sum)
+        encrypted += c2
+    end
+end
+
+Print("Encrypted:")
+Print("------------")
+Print(encrypted)
+Print("------------")

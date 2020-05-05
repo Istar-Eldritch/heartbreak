@@ -1,0 +1,282 @@
+void print_header()
+    ClearText()
+    Print("Tauri OS v0.1")
+    Print("=============")
+    Print("")
+end
+
+
+# This is an object
+# {
+#   path1: {
+#
+#       contents: string
+#   },
+#   ...
+# }
+# Contents are the contents of a file
+# All entries, including files can be uses as directories
+var fs = fs_new()
+var PWD = ""
+
+if HasMemory("fs")
+    var fs_de = deserialize(LoadMemory("fs"))
+    fs = fs_de[0]
+end
+
+if HasFloppy()
+    var data = LoadData()
+    fs_new_dir("/mnt/floppy")
+    fs_write("/mnt/floppy", data)
+end
+
+array fs_new()
+    var root = []
+    root["mnt"] = []
+    root["bin"] = []
+    var fs = []
+    fs["root"] = root
+    return fs
+end
+
+void fs_persist()
+    var to_persist = []
+    var fs_root = fs["root"]
+    var root = []
+    loop folder in GetIndexes(fs_root)
+        if folder != "mnt"
+            root[folder] = fs_root[folder]
+        end
+    end
+    to_persist["root"] = root
+    SaveMemory("fs", serialize(to_persist))
+end
+
+# Creates a new directory
+array fs_new_dir(string path)
+    var parts = str_split(path, "/")
+    array position = fs["root"]
+    loop part in parts
+        if Count(part) > 0
+            if !HasIndex(position, part)
+                position[part] = [] 
+            end
+            position = position[part]
+        end
+    end
+    fs_persist()
+end
+
+array fs_write(string path, string data)
+    var parts = str_split(path, "/")
+    var last = parts[Count(parts) - 1]
+    var position = fs["root"]
+
+    loop part in parts
+        if Count(part) > 0
+            if HasIndex(position, part)
+                if part == last
+                    var file = []
+                    file["data"] = serialize(data)
+                    position[part] = file
+                    fs_persist()
+                    return [0]
+                else
+                    position = position[part]
+                end
+            else
+                return [1]
+            end
+        end
+    end
+end
+
+array fs_read(string path)
+    var parts = str_split(path, "/")
+    var position = fs["root"]
+
+    loop part in parts
+        if Count(part) > 0
+            if HasIndex(position, part)
+                position = position[part]
+            else
+                Print(part + " not in path")
+                return [1]
+            end
+        end
+    end
+    var de = deserialize(position["data"])
+    return [0, de[0]]
+end
+
+
+# List contents on path
+# Returns: [code, results]
+# Codes:
+# 0 - success
+# 1 - Non existing path
+#
+array fs_list_contents(string path)
+    var parts = str_split(path, "/")
+    array position = fs["root"]
+    
+    loop part in parts
+        if Count(part) > 0
+            if HasIndex(position, part)
+                position = position[part]
+            else
+                return [1]
+            end
+        end
+    end
+    return [0, GetIndexes(position)]
+end
+
+# List contents on path
+# Returns: [code, results]
+# Codes:
+# 0 - success
+# 1 - Non existing path
+#
+array fs_remove(string path)
+    var parts = str_split(path, "/")
+    var filtered = []
+    loop part in parts
+        if Count(part) > 0
+            Append(filtered, part)
+        end
+    end
+
+    array parent = fs
+    var to_replace_index = "root"
+    array to_replace = parent[to_replace_index]
+    var last = filtered[Count(filtered) - 1]
+    if Count(filtered) > 1
+        loop i from 0 to Count(filtered) - 2
+            var p = filtered[i]
+            if HasIndex(to_replace, p)
+                parent = parent[to_replace_index]
+                to_replace_index = p
+                to_replace = to_replace[p]
+            else
+                return [1]
+            end
+        end
+    end
+
+    var replacement = []
+    loop dir in GetIndexes(to_replace)
+        if dir != last
+            replacement[dir] = to_replace[dir]
+        end
+    end
+
+    parent[to_replace_index] = replacement
+    fs_persist()
+    return [0]
+end
+
+# Returns 0 on success
+# Codes:
+#   0 - Success
+#   1 - No arguments provided
+#   2 - Non existing directory
+number cd(string path)
+    if path == ""
+        return 1
+    else if path[0] == "/"
+        var res = fs_list_contents(path)
+        if res[0] == 0
+            PWD = path
+            return 0
+        else
+            return 2
+        end
+    else
+        path = PWD + "/" + path
+        return cd(path)
+    end
+end
+
+void cli()
+    loop
+        var PSI = PWD + "$ "
+        var input = Input(PSI)
+        var parts = str_split(input, " ")
+        if parts[0] == "ls"
+            var path = PWD
+            if HasIndex(parts, 1)
+                path = parts[1]
+            end
+            var res = fs_list_contents(path)
+            if res[0] == 0
+                loop content in res[1]
+                    Print(content)
+                end
+            else if res[0] == 1
+                Print(path + " is not a valid folder")
+            else
+                Print("Unexpected error with code: " + res[0])
+            end
+        else if parts[0] == "mkdir"
+            if HasIndex(parts, 1)
+                fs_new_dir(parts[1])
+            else
+                Print("Must provide the name of the directory to create")
+            end
+        else if parts[0] == "cd"
+            if HasIndex(parts, 1)
+                var result = cd(parts[1])
+                if result == 2
+                    Print(parts[1] + " does not exist")
+                else if result == 3
+                    Print(parts[1] + " is not a directory")
+                end
+            else
+                Print("Must provide the name of the directory to cd")
+            end
+        else if parts[0] == "rm"
+            if HasIndex(parts, 1)
+                Print("This operation will remove all data under " + parts[1])
+                var res = Input("Do you want to continue? Y/N: " )
+                if res == "Y" or res == "y"
+                    var res = fs_remove(parts[1])
+                    if res[0] == 1 
+                        Print(parts[1] + " is not a valid directory")
+                    end
+                end
+            else
+                Print("Must provide a directory to rm")
+            end
+        else if parts[0] == "cat"
+            if HasIndex(parts, 1)
+                var res = fs_read(parts[1])
+                if res[0] == 1
+                    Print(parts[1] + " does not exist")
+                else
+                    Print(res[1])
+                end
+            else
+                Print("Must provide the name of the file to cat")
+            end
+        else if parts[0] == "clear"
+            ClearText()
+            print_header()
+        else if parts[0] == "fmt"
+            var input = Input("This will wipe all fs. Are you sure Y/N?")
+            if input == "Y" || input == "y"
+                fs = fs_new()
+                fs_persist()
+            end
+        else if parts[0] == "dump"
+            Print(LoadMemory(parts[1]))
+        else
+            Print("Command " + parts[0] + "  not found")
+        end
+    end
+end
+
+print_header()
+cli()
+
+Print("CLI exited. Reboot system")

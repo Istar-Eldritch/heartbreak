@@ -1,0 +1,53 @@
+var name = GetUser()
+
+if name == "Sebastian"
+    var f = GetFloor()
+    if f < 3
+        f = f + 1
+    else
+        f = 0
+    end
+    Say("Going to floor " + f)
+    GotoFloor(f)
+end
+
+void OnIntruder(string name)
+	Connect("Ministry_Elevator3_Door1")
+	
+	if name == "Monad"
+		Say("Good evening Dr Monad, one second please")
+		if(GetFloor() == 3)
+			GotoFloor(0)
+		else
+			GotoFloor(3)
+		end
+	else if StringContains(name, "Typer")
+		Say("Hello and welcome to the Ministry.")
+		if(GetFloor() == 0)
+			GotoFloor(2)
+		else
+			GotoFloor(0)
+		end
+	else if name == "Svante"
+		if(GetFloor() == 1)
+			GotoFloor(2)
+		else
+			GotoFloor(1)
+		end
+	else if name == "Bower"
+		Say("Good evening Mr Bower, one second please")
+		if(GetFloor() == 1)
+			GotoFloor(0)
+		else
+			GotoFloor(1)
+		end
+	else
+		Sleep(3)
+		# Say("You are not authorized.")
+		GotoFloor(0)
+	end
+end
+
+void OnHack(string name)
+   #  Say("Illegal hacking identified.")
+end

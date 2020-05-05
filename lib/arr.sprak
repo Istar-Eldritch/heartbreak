@@ -1,0 +1,48 @@
+array arr_tail(array input)
+    array acc = []
+    number endd = Count(input) - 1
+    if endd == 0
+        return acc
+    end
+    loop i from 1 to endd
+        Append(acc, input[i])
+    end
+    return acc
+end
+
+array arr_sub(array input, number f, number t)
+    array acc = []
+    loop i from f to t
+        Append(acc, input[t])
+    end
+    return acc
+end
+
+# Returns the position of the value or -1
+# TODO Make this a binary search algorithm
+number arr_find(array input, string value)
+    var result = -1
+    number endd = Count(input) - 1
+    loop c from 0 to endd
+        if value == input[c]
+            return c
+        end
+    end
+    return result
+end
+
+# Returns the concatenation of the values of the array using the separator
+string arr_concat(array input, string separator)
+    var str = ""
+    var index = 0
+    loop
+        if index >= Count(input)
+            break
+        else if index > 0
+            str = str + separator
+        end
+        str = str + input[index]
+        index++
+    end
+    return str
+end

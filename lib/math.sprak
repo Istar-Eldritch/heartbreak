@@ -1,0 +1,38 @@
+
+# Does base^exp
+number pow(number base, number exp)
+    if (exp == 0)
+        return 1
+    end
+    base * pow(base, exp - 1)
+end
+
+# Returns a number from a string, errors if the string is not a valid number
+array parse_int(string input)
+    number acc = 0
+    var size = Count(input) - 1
+    loop c in input
+        var decimal = CharToInt(c) + 49
+        if decimal < 0 || decimal > 9
+            return [1, "Character '" + c + "' is not a valid number"]
+        end
+        acc = acc + (decimal * pow(10, size))
+        size = size - 1
+    end
+    return [0, acc]
+end
+
+## Pads numbers with 0 to its left
+string pad_int(number n, number total_size)
+    var result = n + ""
+    total_size = total_size - Count(result)
+    loop
+        if total_size == 0
+            break
+        end
+        result = "0" + result
+        total_size = total_size - 1
+    end
+
+    return result
+end

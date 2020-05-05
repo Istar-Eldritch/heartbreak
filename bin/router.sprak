@@ -1,0 +1,28 @@
+
+void register(string name)
+   var db = Connect("MainFrame")
+   var addrs_res = db.read("addrs")
+   var addrs = []
+   if addrs_res[0] == 0
+       addrs = addrs_res[1]
+   end
+   addrs[name] = 1
+   Connect(name)
+   db.write("addrs", addrs)
+end
+
+void reset_connections()
+  DisconnectAll()
+  var db = Connect("MainFrame")
+  var addrs_res = db.read("addrs")
+  var addrs = []
+  if addrs_res[0] == 0
+      addrs = addrs_res[1]
+  end
+  loop GetIndexes(addrs)
+      Connect(@)
+  end
+end
+
+reset_connections()
+Slurp()

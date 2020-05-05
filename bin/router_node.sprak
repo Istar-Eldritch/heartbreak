@@ -1,0 +1,4 @@
+# Node code
+var router = Connect("Hotel_Room1_FuseBox")
+router.register(GetName())
+Slurp()

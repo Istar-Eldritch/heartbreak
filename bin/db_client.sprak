@@ -1,0 +1,75 @@
+var ministry = Connect("MainFrame")
+
+Print("Use help for a list of available options")
+
+void help()
+    Print("")
+    Print("Available commands:")
+    Print("")
+    Print("list: List available data")
+    Print("read [key]: Read data for given key")
+    Print("write_floppy: Write data from a floppy disk")
+    Print("")
+end
+
+var db = ministry
+
+loop
+    var input = str_split(Input("$ "), " ")
+    var cmd = input[0]
+    if cmd == "help"
+        help()
+    else if cmd == "list"
+        Print("Available keys: ")
+        loop key in db.GetMemories()
+            Print("  - " + key)
+        end
+    else if cmd == "read"
+        if HasIndex(input, 1)
+            var response = db.read(input[1])
+            if response[0] == 0
+                Print(db.to_json(response[1]))
+            else
+                Print("Error (" + response[0] + "): " + response[1])
+            end
+        else
+            Print("Must provide key")
+        end
+    else if cmd == "write_floppy"
+        if !HasFloppy()
+            Print("Please insert floppy")
+            break
+        end
+        
+        var disket = Input("Key: ")
+
+        var data = LoadData()
+
+        Print("Writing data...")
+        db.write(disket, data)
+        Input("Done. Press Enter to continue")
+    else if cmd == "dump_to_floppy"
+        if !HasFloppy()
+            Print("Please insert floppy")
+            break
+        end
+        ClearData()
+        var data = db.dump()
+        var data_se = db.to_json(data)
+        SaveData(data_se)
+        Print("Done")
+    else if cmd == "restore_dump"
+        if !HasFloppy()
+            Print("Please insert floppy")
+            break
+        end
+        var data_json = arr_concat(LoadData(), "")
+        var data = db.from_json(data_json[0])
+        loop GetIndexes(data)
+            db.write(@, data[@])
+        end
+        Print("Done")
+    else
+        Print("Cmd not recognized")
+    end
+end

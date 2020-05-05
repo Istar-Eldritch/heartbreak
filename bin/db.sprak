@@ -1,0 +1,22 @@
+
+void write(string key, data)
+    SaveMemory(key, to_json(data))
+end
+
+array read(string key)
+    if HasMemory(key)
+        var de = from_json(LoadMemory(key))
+        return [0, de[0]]
+    else
+        return [1, "Key '" + key + "' not found"]
+    end
+end
+
+array dump()
+    var mem = []
+    loop m in GetMemories()
+        var data = read(m)
+        mem[m] = data[1]
+    end
+    return mem
+end
