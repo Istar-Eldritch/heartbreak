@@ -23,11 +23,32 @@ void print_header()
     Print("")
 end
 
+void ssh(string host)
+    var conn = Connect(host)
+    if conn > -1
+        set_env("HOST", host)
+    end
+end
+
+void exit()
+    set_env("HOST", Name())
+    cli()
+end
+
 void cli()
     var backend = Connect("Frank_Room_MediumComputer1_1")
     var host = get_env("HOST")
-    var input = str_split(Input("$ "), " ")
+    var prompt = "$ "
+    if host != Name()
+        prompt = "@" + host + " $ "
+    end
+
+    var input = str_split(Input(prompt), " ")
     var cmd = input[0]
+    if cmd == "exit"
+        exit()
+        return
+    end
     var args = arr_tail(input)
     backend.execute(host, cmd, args, Name(), "OnResponse")
 end
