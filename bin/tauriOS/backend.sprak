@@ -1,0 +1,19 @@
+void execute(string host, string func, array args, origin, callback)
+    var conn = Connect(host)
+    var orig = Connect(origin)
+
+    var result = []
+    if conn == -1
+        result = [2, "Host '" + host "' does not exist"]
+    end
+    if conn.HasFunction(func)
+        result = [0, RemoteFunctionCall(conn, func, args)]
+    else
+        result = [1, "Function '" + func + "' not available on " + host]
+    end
+    if orig != -1
+        if orig.HasFunction(callback)
+            RemoteFunctionCall(orig, callback, [result])
+        end
+    end
+end

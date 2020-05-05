@@ -1,0 +1,43 @@
+void OnResponse(array response)
+    if response[0] == 0
+        if Type(response[1]) != "unknown"
+            Print(response[1])
+            Print("")
+        end
+    else
+        Print("Error(" + response[0] +"): " + response[1])
+        Print("")
+    end
+    cli()
+end
+
+void clear()
+    print_header()
+    ClearText()
+end
+
+void print_header()
+    ClearText()
+    Print("Tauri OS v0.1")
+    Print("=============")
+    Print("")
+end
+
+void cli()
+    var backend = Connect("Frank_Room_MediumComputer1_1")
+    var host = get_env("HOST")
+    var input = str_split(Input("$ "), " ")
+    var cmd = input[0]
+    var args = arr_tail(input)
+    backend.execute(host, cmd, args, Name(), "OnResponse")
+end
+
+void init()
+    if get_env("HOST") == ""
+        set_env("HOST", Name())
+    end
+    print_header()
+    cli()
+end
+
+init()

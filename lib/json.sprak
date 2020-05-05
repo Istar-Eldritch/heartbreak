@@ -57,7 +57,7 @@ array from_json_inner(string json, pos)
         var arr = []
         loop
             if json[pos] == "}"
-                return [pos, arr]
+                return [pos + 1, arr]
             else if json[pos] == ","
                 pos = pos + 1
             end
@@ -106,7 +106,7 @@ array from_json_inner(string json, pos)
     end
 end
 
-array from_json(string json)
+void from_json(string json)
     var res = from_json_inner(json, 0)
-    return [res[1]]
+    return res[1]
 end
