@@ -36,3 +36,11 @@ string pad_int(number n, number total_size)
 
     return result
 end
+
+number max(number first, number second)
+    if first < second
+        return second
+    else
+        return first
+    end
+end

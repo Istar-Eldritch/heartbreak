@@ -1,0 +1,79 @@
+
+# Compares to values
+#
+# Returns an array with [code, result]:
+# Codes:
+#   0 - Sucess
+#   1 - Unsuported types
+#   2 - Cant compare, Types are different
+# On Success the results are:
+#  -1  - The first item is smaller than the second
+#   0  - The two items are equal
+#   1  - The first items is greater than the second
+# On Error the second attribute contains an error message
+#
+array cmp(first, second)
+    if Type(first) == "number" && Type(second) == "number"
+        if first < second
+            return [0, -1]
+        else if first > second
+            return [0, 1]
+        else
+            return [0, 0]
+        end
+    else if Type(first) == "string" && Type(second) == "string"
+        var len = max(Count(first), Count(second))
+        var i = 0
+        loop
+            if i >= Count(first) && i >= Count(second)
+                return [0, 0]
+            else if i >= Count(first)
+                return [0, -1]
+            else if i >= Count(second)
+                return [0, 1]
+            end
+            var c = cmp(CharToInt(first[i]), CharToInt(second[i]))
+            if c[1] != 0
+                return c
+            else
+                i++
+            end
+        end
+    else if Type(first) == "array" && Type(second) == "array"
+        var len = max(Count(first), Count(second))
+
+        # TODO: Replace this with merge / tim sort
+        var ifirst = GetIndexes(first)
+        arr_bubble_sort(ifirst)
+        var isecond = GetIndexes(second)
+        arr_bubble_sort(isecond)
+        var i = 0
+        loop
+            if i >= Count(ifirst) && i >= Count(isecond)
+                return [0, 0]
+            else if i >= Count(ifirst)
+                return [0, -1]
+            else if i >= Count(isecond)
+                return [0, 1]
+            end
+            var c = cmp(ifirst[i], isecond[i])
+            if c[1] != 0
+                return c
+            else
+                i++
+            end
+        end
+    else if Type(first) == "bool" && Type(second) == "bool"
+        if first == second
+            return [0, 0]
+        else if first
+            return [0, 1]
+        else
+            return [0, -1]
+        end
+    else if Type(first) != Type(second)
+        return [2, "Cant compare different types '" + Type(first) + "' - '" + Type(second) + "'"]
+    else
+        return [1, "Cant compare, unsuported types"]
+    end
+end

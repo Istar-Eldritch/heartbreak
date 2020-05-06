@@ -21,14 +21,14 @@ end
 # Returns the position of the value or -1
 # TODO Make this a binary search algorithm
 number arr_find(array input, string value)
-    var result = -1
-    number endd = Count(input) - 1
-    loop c from 0 to endd
-        if value == input[c]
-            return c
+    var i = 0
+    loop input
+        if value == @
+            return i
         end
+        i++ 
     end
-    return result
+    return -1
 end
 
 # Returns the concatenation of the values of the array using the separator
@@ -45,4 +45,56 @@ string arr_concat(array input, string separator)
         index++
     end
     return str
+end
+
+# Does a insert_on_site
+void arr_insert(array arr, number pos, value)
+    var len = Count(arr)
+    if len <= pos
+        Append(arr,value)
+    else
+        loop
+            if pos >= len
+                break;
+            else
+                var subs = value;
+                value = arr[pos]
+                arr[pos] = subs
+            end
+        end
+    end
+end
+
+# In place bubble sort
+void arr_bubble_sort(array xs)
+    if Count(xs) < 2
+        return
+    end
+    loop
+        bool didFlip = false
+        loop i from 0 to Count(xs) - 2
+            var c = cmp(xs[i],xs[i + 1])
+            if c[0] != 0
+                Print("Cant sort because values are not sortable: " + c[1])
+                return;
+            end
+            if c[1] == 1
+                var temp = xs[i]
+                xs[i] = xs[i + 1]
+                xs[i + 1] = temp
+                didFlip = true
+            end
+        end
+        if didFlip == false
+            break
+        end
+    end
+end
+
+array arr_fix(array broken)
+    var arr = []
+    loop broken
+        Append(arr, @)
+    end
+    return arr
 end

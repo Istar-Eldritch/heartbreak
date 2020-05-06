@@ -1,0 +1,65 @@
+
+void from_json_test()
+    Print("Starting from_json test")
+    Print("=====================")
+    assert_eq(from_json(to_json(1)), 1, "Single digit integer")
+    assert_eq(from_json(to_json(123)), 123, "Multi digit integer")
+    assert_eq(from_json(to_json("")), "", "Empty string")
+    assert_eq(from_json(to_json("test")), "test", "String")
+    assert_eq(from_json(to_json('te"st')), 'te"st', "String with scaped quotes")
+    assert_eq(from_json(to_json('te st')), "te st", "String with spaces")
+    assert_eq(from_json(to_json(true)), true, "True bool")
+    assert_eq(from_json(to_json(false)), false, "False bool")
+    assert_eq(from_json(to_json([])), [], "Empty array")
+    assert_eq(from_json(to_json([1])), arr_fix([1]), "Single element array")
+    assert_eq(from_json(to_json([123])), arr_fix([123]), "Multi digit single element array")
+    assert_eq(from_json(to_json([1,2,3])), arr_fix([1,2,3]), "Single digit multi element array")
+    assert_eq(from_json(to_json([123,234,345])), arr_fix([123,234,345]), "Multi digit multi element array")
+    assert_eq(from_json(to_json([""])), arr_fix([""]), "Single element empty string")
+    assert_eq(from_json(to_json(["test"])), arr_fix(["test"]), "Single element string")
+    assert_eq(from_json(to_json(['te"st'])), arr_fix(['te"st']), "Single element scaped string")
+    assert_eq(from_json(to_json(['te st'])), arr_fix(["te st"]), "Single element spaced string")
+    assert_eq(from_json(to_json(['te st'])), arr_fix(["te st"]), "Single element spaced string")
+    assert_eq(from_json(to_json(['test1', 'test2'])), arr_fix(["test1","test2"]), "Multiple strings")
+    assert_eq(from_json(to_json([[]])), arr_fix([[]]), "Nested array")
+    assert_eq(from_json(to_json([['test1'], 'test2', ['test3']])), arr_fix([arr_fix(["test1"]),"test2",arr_fix(["test3"])]), "Multiple nested entities")
+
+    var obj = []
+    obj["_k"] = 1
+    assert_eq(from_json(to_json(obj)), obj, "Empty object")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = []
+    assert_eq(from_json(to_json(obj)), obj, "Object empty array as value")
+    
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = arr_fix([""])
+    assert_eq(from_json(to_json(obj)), obj, "Array emtpy value")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = 123
+    assert_eq(from_json(to_json(obj)), obj, "Object empty number as value")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = true
+    assert_eq(from_json(to_json(obj)), obj, "Object empty bool as value")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = "a"
+    assert_eq(from_json(to_json(obj)), obj, "Object string as value")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test1"] = "a"
+    obj["test2"] = 2
+    assert_eq(from_json(to_json(obj)), obj, "Multiple keys")
+
+    Print("Done with from_json test")
+    Print("========================")
+end
+

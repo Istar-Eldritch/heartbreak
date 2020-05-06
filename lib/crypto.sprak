@@ -1,0 +1,42 @@
+
+string encrypt(string key, string message)
+    number k = CharToInt(key[0])
+
+    string encrypted = ""
+
+    loop c in message
+        if c == " "
+            encrypted += " "
+        else
+            var sum = Mod(k + CharToInt(c), 26)
+            var c2 = IntToChar(sum)
+            encrypted += c2
+        end
+    end
+
+    return encrypted
+end
+
+string decrypt(string key, string message)
+    number k = CharToInt(key[0])
+
+    string decrypted = ""
+
+    loop m in message
+        if m == " "
+            decrypted += " "
+        else
+            var sum = 26 - CharToInt(m) - k
+            if sum > 26
+                sum = sum - 26
+            else if  sum < 0
+                sum = sum + 26
+            end
+
+            var m2 = IntToChar(sum)
+            decrypted += m2
+        end
+    end
+
+    return decrypted
+end

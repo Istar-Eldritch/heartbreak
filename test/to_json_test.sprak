@@ -1,0 +1,70 @@
+
+void to_json_test()
+    Print("Starting to_json test")
+    Print("=====================")
+    assert_eq(to_json(1), "1", "Serialize single digit integer")
+    assert_eq(to_json(123), "123", "Serialize multi digit integer")
+    assert_eq(to_json(""), '""', "Serialize empty string")
+    assert_eq(to_json("test"), '"test"', "Serialize string")
+    assert_eq(to_json('te"st'), '"te\"st"', "Serialize string with scaped quotes")
+    assert_eq(to_json('te st'), '"te st"', "Serialize string with spaces")
+    assert_eq(to_json(true), 'true', "Serialices true bool")
+    assert_eq(to_json(false), 'false', "Serialices false bool")
+    assert_eq(to_json([]), '[]', "Serializes empty array")
+    assert_eq(to_json([1]), '[1]', "Single element array")
+    assert_eq(to_json([123]), '[123]', "Multi digit single element array")
+    assert_eq(to_json([1,2,3]), '[1,2,3]', "Single digit multi element array")
+    assert_eq(to_json([123,234,345]), '[123,234,345]', "Multi digit multi element array")
+    assert_eq(to_json([""]), '[""]', "Single element empty string")
+    assert_eq(to_json(["test"]), '["test"]', "Single element string")
+    assert_eq(to_json(['te"st']), '["te\"st"]', "Single element scaped string")
+    assert_eq(to_json(['te st']), '["te st"]', "Single element spaced string")
+    assert_eq(to_json(['te st']), '["te st"]', "Single element spaced string")
+    assert_eq(to_json(['test1', 'test2']), '["test1","test2"]', "Multiple strings")
+    assert_eq(to_json([[]]), '[[]]', "Nested array")
+    assert_eq(to_json([['test1'], 'test2', ['test3']]), '[["test1"],"test2",["test3"]]', "Multiple nested entities")
+
+    var obj = []
+    obj["_k"] = 1
+    assert_eq(to_json(obj), '{}', "Empty object")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = []
+    assert_eq(to_json(obj), '{"test":[]}', "Object empty array as value")
+    
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = [""]
+    assert_eq(to_json(obj), '{"test":[""]}', "Array emtpy value")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = 123
+    assert_eq(to_json(obj), '{"test":123}', "Object empty number as value")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = true
+    assert_eq(to_json(obj), '{"test":true}', "Object empty bool as value")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = "a"
+    assert_eq(to_json(obj), '{"test":"a"}', "Object string as value")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test1"] = "a"
+    obj["test2"] = 2
+    assert_eq(to_json(obj), '{"test1":"a","test2":2}', "Multiple keys")
+
+    obj = []
+    obj["_k"] = 1
+    obj["test"] = [""]
+    assert_eq(to_json(obj), '{"test":[""]}', "Array emtpy value")
+
+    Print("Done with to_json test")
+    Print("======================")
+end
+

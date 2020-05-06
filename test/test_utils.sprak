@@ -1,0 +1,22 @@
+
+void assert_eq(first, second, msg)
+    var c = cmp(first, second)
+    if c[0] != 0
+        Print("")
+        Print("FAIL " + msg)
+        Print("     Cant compare values: " + c[1])
+        Print("     Provided: " + first)
+        Print("     Expected: " + second)
+        Print("")
+        return
+    end
+    if  c[1] == 0
+        # Print("PASS " + msg)
+    else
+        Print("")
+        Print("FAIL " + msg)
+        Print("     Provided: " + first)
+        Print("     Expected: " + second)
+        Print("")
+    end
+end

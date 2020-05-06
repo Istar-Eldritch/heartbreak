@@ -16,7 +16,6 @@ end
 
 # Returns the json representation of the SPRAK input
 # All arrays are considered objects
-# All numeric keys in arrays will be serialized as strings
 string to_json(input)
     if Type(input) == "bool"
         if input
@@ -29,32 +28,62 @@ string to_json(input)
     else if Type(input) == "string"
         return '"' + scape_string(input) + '"'
     else if Type(input) == "array"
-        var json  = "{"
-        var i = 0
-        var indexes = GetIndexes(input)
-        loop
-            if i == Count(input)
-                break
-            else if i > 0
-                json = json + ",";
+        if HasIndex(input, "_k")
+            if input["_k"] == 1
+                var json  = "{"
+                var i = 0
+                var indexes = GetIndexes(input)
+                Remove(indexes, arr_find(indexes, "_k"))
+                loop indexes
+                    if i == Count(input)
+                        break
+                    else if i > 0
+                        json += ","
+                    end
+                    var key = to_json(@+"")
+                    var value = to_json(input[@])
+                    json += + key + ":" + value
+                    i += 1
+                end
+                return json + "}"
             end
-            var index = indexes[i]
-            # Keys are always json strings
-            var key = to_json(index+"")
-            var value = to_json(input[index])
-            json = json + key + ":" + value
-            i = i + 1
         end
-        return json + "}"
+
+        var json = "["
+        var i = 0
+        loop input
+            if i > 0
+                json += ","
+            end
+            var value = to_json(@)
+            json += value
+            i++
+        end
+        return json + "]"
     end
 end
 
 # Returns the SPRAK representation of the json
 array from_json_inner(string json, pos)
     var first_c = json[pos]
-    if first_c == "{"
+    if first_c == "["
+        pos += 1
+        var arr = []
+        loop
+            if json[pos] == "]"
+                return [pos + 1, arr]
+            else if json[pos] == ","
+                pos += 1
+            end
+            var value_res = from_json_inner(json, pos)
+            pos = value_res[0]
+            var value = value_res[1]
+            Append(arr, value)
+        end
+    else if first_c == "{"
         pos = pos + 1
         var arr = []
+        arr["_k"] = 1
         loop
             if json[pos] == "}"
                 return [pos + 1, arr]
@@ -88,7 +117,7 @@ array from_json_inner(string json, pos)
             if pos >= Count(json)
                 pos = pos + 1
                 break;
-            else if json[pos] == "," || json[pos] == "}" || json[pos] == ":"
+            else if json[pos] == "," || json[pos] == "}" || json[pos] == "]" || json[pos] == ":"
                 break; 
             end
             acc = acc + json[pos]
