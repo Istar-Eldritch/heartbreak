@@ -1,0 +1,31 @@
+bool Allow(string target, number level)
+    var server = Connect("Computer1")
+    var mode = 0
+    if server.HasMemory("mod_mode")
+        mode = server.LoadMemory("mod_mode")    
+    end
+    
+    # Normal modifier
+    if mode == 0
+        return true
+    # Door opener mode, does not modify
+    else if mode == 1
+        if server.GetTypeOfThing(target) == "door"
+            var doorManager = Connect("Lodge1_Room1_Computer9")
+            doorManager.Unlock(target)
+            Log("Door open")
+        end
+        return false
+    # Clipboard mode, does not modify
+    else if mode == 2
+        var clip = Connect("Factory_ServerRoom_Extractor_1")
+        clip.CopyToClipboard(target)
+        Log("Copied")
+        return false
+    # Network host add
+    else if mode == 3
+        server.add_host(target)
+        Log("Host added")
+        return 0
+    end
+end

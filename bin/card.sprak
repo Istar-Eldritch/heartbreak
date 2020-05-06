@@ -1,0 +1,33 @@
+
+void CheckBalance()
+    var server = Connect("Computer1")
+    var modes = []
+    Append(modes, "Modify")
+    Append(modes, "Open Door")
+    Append(modes, "Clipboard")
+    Append(modes, "Network")
+    
+    var mode = 0
+    if server.HasMemory("mod_mode")
+        mode = server.LoadMemory("mod_mode")
+    end
+    if mode < 3
+        mode++
+    else
+        mode = 0
+    end
+    server.SaveMemory("mod_mode", mode)
+    Print("ModMode: " + modes[mode])
+end
+
+void MakeTransaction(number amount)
+	var computer = Connect("FinanceComputer")
+    var sign = "+"
+    var displayAmount = amount
+    if amount < 0
+        sign = "-"
+        displayAmount = amount * -1
+    end
+	Print(sign + " $" + displayAmount)
+	computer.ChangeBalance(GetNameOfCardOwner(), amount)
+end
