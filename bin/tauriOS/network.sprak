@@ -1,0 +1,35 @@
+
+array get_hosts()
+    var hosts = []
+    if HasMemory("hosts")
+        hosts = from_json(LoadMemory("hosts"))
+    end
+    return hosts
+end
+
+void remove_host(string name)
+    var hosts = get_hosts()
+    var position = arr_find(hosts, name)
+    if position > -1
+        Remove(hosts, position)
+    end
+    SaveMemory("hosts", to_json(hosts))
+end
+
+void connect_all()
+    var hosts = get_hosts()
+    loop hosts
+        Connect(@)
+    end
+end
+
+void add_host(string name)
+    var conn = Connect(name)
+    if conn > -1
+        var hosts = get_hosts()
+        if arr_find(hosts, name) == -1
+            Append(hosts, name)
+            SaveMemory("hosts", to_json(hosts))
+        end
+    end
+end

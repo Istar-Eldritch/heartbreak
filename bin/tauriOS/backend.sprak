@@ -1,3 +1,100 @@
+array available_commands(number conn)
+    var cmds = []
+    Append(cmds, "Count")
+    Append(cmds, "Range")
+    Append(cmds, "GetIndexes")
+    Append(cmds, "Remove")
+    Append(cmds, "RemoveAll")
+    Append(cmds, "HasIndex")
+    Append(cmds, "Append")
+    Append(cmds, "Type")
+    Append(cmds, "Round")
+    Append(cmds, "Int")
+    Append(cmds, "Mod")
+    Append(cmds, "Info")
+    Append(cmds, "Random")
+    Append(cmds, "GetUser")
+    Append(cmds, "Name")
+    Append(cmds, "Time")
+    Append(cmds, "Width")
+    Append(cmds, "Height")
+    Append(cmds, "GetHour")
+    Append(cmds, "GetMinute")
+    Append(cmds, "Sleep")
+    Append(cmds, "Quit")
+    Append(cmds, "CharToInt")
+    Append(cmds, "IntToChar")
+    Append(cmds, "ClearText")
+    Append(cmds, "Print")
+    Append(cmds, "Say")
+    Append(cmds, "PlaySound")
+    Append(cmds, "Pitch")
+    Append(cmds, "Sin")
+    Append(cmds, "Cos")
+    Append(cmds, "PrintS")
+    Append(cmds, "Input")
+    Append(cmds, "Line")
+    Append(cmds, "Text")
+    Append(cmds, "Rect")
+    Append(cmds, "DisplayGraphics")
+    Append(cmds, "Color")
+    Append(cmds, "Repeat")
+    Append(cmds, "HSVtoRGB")
+    Append(cmds, "RGBToHSV")
+    Append(cmds, "Lines")
+    Append(cmds, "GetConnections")
+    Append(cmds, "Slurp")
+    Append(cmds, "Connect")
+    Append(cmds, "DisconnectAll")
+
+    Append(cmds, "HD")
+    Append(cmds, "GetMemories")
+    Append(cmds, "ClearMemories")
+    Append(cmds, "EraseMemory")
+    Append(cmds, "HasMemory")
+    Append(cmds, "SaveMemory")
+    Append(cmds, "LoadMemory")
+    Append(cmds, "IsKeyPressed")
+    Append(cmds, "HasFloppy")
+    Append(cmds, "LoadData")
+    Append(cmds, "ClearData")
+    Append(cmds, "SaveData")
+
+    Append(cmds, "GetPeople")
+    Append(cmds, "GetThingsOfType")
+    Append(cmds, "GetPosition")
+    Append(cmds, "GetAction")
+    Append(cmds, "GetRoom")
+    Append(cmds, "GetAllRooms")
+    Append(cmds, "GetTypeOfThing")
+    Append(cmds, "SetPosition")
+    Append(cmds, "InteractWith")
+
+    Append(cmds, "FindPath")
+    Append(cmds, "Switch")
+    Append(cmds, "TurnOff")
+    Append(cmds, "TurnOn")
+    Append(cmds, "Unlock")
+    Append(cmds, "Lock")
+
+    var available = []
+    loop cmds
+        if conn.HasFunction(@)
+            Append(available, @)
+        end
+    end
+
+    if HasMemory("custom_cmds")
+        var cmds = from_json(LoadMemory("custom_cmds"))
+        loop cmds
+            if conn.HasFunction(@)
+                Append(available, @)
+            end
+        end
+    end
+    return available
+end
+
 void execute(string host, string func, array args, origin, callback)
     var conn = Connect(host)
     var orig = Connect(origin)
@@ -6,7 +103,9 @@ void execute(string host, string func, array args, origin, callback)
     if conn == -1
         result = [2, "Host '" + host "' does not exist"]
     end
-    if conn.HasFunction(func)
+    if func == "help"
+        result = [0, available_commands(conn)]
+    else if conn.HasFunction(func)
         result = [0, RemoteFunctionCall(conn, func, args)]
     else
         result = [1, "Function '" + func + "' not available on " + host]

@@ -1,6 +1,17 @@
 void OnResponse(array response)
     if response[0] == 0
-        if Type(response[1]) != "unknown"
+        if Type(response[1]) == "array"
+            var c = 0
+            loop response[1]
+                c++
+                Print(c + " - " + @)
+                if Mod(c, Height() / 10) == 0
+                    
+                    var input = Input("Continue")
+                end
+            end
+            Print("")
+        else if Type(response[1]) != "unknown"
             Print(response[1])
             Print("")
         end
@@ -36,7 +47,7 @@ void exit()
 end
 
 void cli()
-    var backend = Connect("Frank_Room_MediumComputer1_1")
+    var backend = Connect("Fibonacci")
     var host = get_env("HOST")
     var prompt = "$ "
     if host != Name()
