@@ -1,0 +1,13 @@
+
+void tp_to_object(string person, dest object)
+
+    var pol = "PoliceOfficeInterior_MinistryOfficeWorkstationComputer_1"
+    var polC = Connect(pol)
+    var rec = "PoliceOfficeInterior_LargeRecorder_LargeRecorder_5"
+    var recC = Connect(rec)
+    var mf = Connect("MainFrame")
+
+    mf.setPosition(rec, person)
+    recC.MovePerson(person, dest)
+    mf.setPosition(rec, "Pogo")
+end
