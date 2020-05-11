@@ -31,3 +31,15 @@ void MakeTransaction(number amount)
 	Print(sign + " $" + displayAmount)
 	computer.ChangeBalance(GetNameOfCardOwner(), amount)
 end
+
+void unlock_all_doors()
+    var mf = Connect("MainFrame")
+    var st = Connect("SteeringComputer")
+
+
+    var room = mf.GetRoom("Sebastian")
+
+    loop mf.GetThingsInRoom(room)
+        st.Unlock(@)
+    end
+end
