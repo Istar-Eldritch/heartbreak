@@ -1,3 +1,4 @@
+
 array available_commands(number conn)
     var cmds = []
     Append(cmds, "Count")
@@ -61,6 +62,7 @@ array available_commands(number conn)
     Append(cmds, "SaveData")
 
     Append(cmds, "GetPeople")
+    Append(cmds, "GetThingsInRoom")
     Append(cmds, "GetThingsOfType")
     Append(cmds, "GetPosition")
     Append(cmds, "GetAction")
