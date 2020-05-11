@@ -1,3 +1,4 @@
+
 array arr_tail(array input)
     array acc = []
     number endd = Count(input) - 1
