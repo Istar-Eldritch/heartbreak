@@ -1,4 +1,8 @@
 # Node code
-var router = Connect("Hotel_Room1_FuseBox")
-router.register(GetName())
+DisconnectAll()
+var router = Connect("Computer1")
+router.add_host(GetName())
+loop router.get_hosts()
+    Connect(@)
+end
 Slurp()
